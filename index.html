@@ -58,131 +58,6 @@
 (async function(){
 
   const VALIDATION_STRING = "@!#$%&**)(dookie><=÷×?@";
-  const sheetCSV = "https://docs.google.com/spreadsheets/d/1FBR3R5qdZY5F4zAs2rzzpaZI5yhvEBdnZwohDXRDpCc/export?format=csv";
-  const container = document.getElementById("blurbModule");
-
-  container.textContent = "Reviewing submissions…";
-
-  try {
-    const res = await fetch(sheetCSV, { cache: "no-store" });
-    if (!res.ok) throw new Error("Fetch failed");
-
-    const text = await res.text();
-
-    const rows = text.trim().split("\n")
-      .map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
-
-    const header = rows.shift();
-
-    const idx = {
-      timestamp: header.indexOf("Timestamp"),
-      blurb: header.indexOf("Headline:Blurb"),
-      validation: header.indexOf("Validation Code"),
-      goes: header.indexOf("Goes Live"),
-      dies: header.indexOf("Dies"),
-      posted: header.indexOf("Posted by:")
-    };
-
-    const now = new Date();
-
-    const validEntries = rows
-      .map(cols => {
-        return {
-          timestamp: new Date((cols[idx.timestamp] || "").replace(/"/g, "")),
-          blurb: (cols[idx.blurb] || "").replace(/"/g, ""),
-          validation: (cols[idx.validation] || "").replace(/"/g, "").trim(),
-          goes: new Date((cols[idx.goes] || "").replace(/"/g, "")),
-          dies: new Date((cols[idx.dies] || "").replace(/"/g, "")),
-          posted: (cols[idx.posted] || "").replace(/"/g, "")
-        };
-      })
-      .filter(entry =>
-        entry.validation === VALIDATION_STRING &&
-        now >= entry.goes &&
-        now <= entry.dies
-      )
-      .sort((a, b) => {
-        // 1️⃣ Newest first
-        if (b.timestamp - a.timestamp !== 0) {
-          return b.timestamp - a.timestamp;
-        }
-        // 2️⃣ Next to die first
-        return a.dies - b.dies;
-      });
-
-    container.innerHTML = "";
-
-    validEntries.forEach(entry => {
-      const div = document.createElement("div");
-      div.className = "message";
-      div.innerHTML = `
-        <div>${entry.blurb}</div>
-        <div style="margin-top:8px;font-size:12px;">
-          Posted by ${entry.posted} on ${entry.timestamp.toLocaleString()}
-        </div>
-      `;
-      container.appendChild(div);
-    });
-
-    if (validEntries.length === 0) {
-      container.textContent = "No currently validated blurbs meet publication criteria.";
-    }
-
-  } catch (err) {
-    container.textContent = "Blurb validation temporarily unavailable.";
-  }
-
-})();
-</script>
-🧠 What This Now Does Cleanly
-
-Uses cache: "no-store" so it always pulls fresh data on load
-
-Removes quotes and whitespace from validation field
-
-Never exposes the validation string
-
-Sort logic is deterministic
-
-Fully client-side, still free hosting
-
-If you’d like next-level polish, we can:
-
-Add subtle fade-in animation (still plain, but intentional)
-
-Add a “time remaining” indicator until each blurb dies
-
-Highlight the one that’s about to expire
-
-Limit max displayed entries (for cleanliness)
-
-Right now though?
-
-You’ve built a date-gated, validation-gated publishing engine running entirely on GitHub Pages for $0.
-
-Very on brand.
-
-Please update the code with this url for the csv  https://docs.google.com/spreadsheets/d/e/2PACX-1vTyttdz_e1tyl61T99zLT7fxxmxzCVRCCGjCyjxczHbIVohfCjANnCB-ZfTZbWYE-6Jk-L83Rg2xS9-/pub?output=csv
-
-Done. Here is your updated production script with the new published CSV URL wired in.
-
-This keeps:
-
-✔ Validation required (never displayed)
-
-✔ Only live between Goes Live and Dies
-
-✔ Newest first
-
-✔ Then next to die
-
-✔ Fresh fetch on every load
-
-Replace Your Existing Script With This
-<script>
-(async function(){
-
-  const VALIDATION_STRING = "@!#$%&**)(dookie><=÷×?@";
   const sheetCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTyttdz_e1tyl61T99zLT7fxxmxzCVRCCGjCyjxczHbIVohfCjANnCB-ZfTZbWYE-6Jk-L83Rg2xS9-/pub?output=csv";
 
   const container = document.getElementById("blurbModule");
@@ -262,6 +137,7 @@ Replace Your Existing Script With This
   </div>
 </body>
 </html>
+
 
 
 
