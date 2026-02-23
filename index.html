@@ -1,13 +1,143 @@
-<!-- Original Standard Assholes Podcast Content -->
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Standard Assholes Podcast</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>The Standard Assholes Podcast</title>
+  <meta name="description" content="The Standard Assholes Podcast – a TMVP C Block spinoff featuring improvisational humor, scripted bits, and entertainment experiments.">
+  <style>
+    body { margin:0; font-family: Arial, Helvetica, sans-serif; background:#fff; color:#000; }
+    .wrap { max-width: 720px; margin: 0 auto; padding: 48px 20px; }
+    header { display:flex; align-items:center; gap:16px; margin-bottom:24px; }
+    header img { width:72px; height:72px; }
+    h1 { font-size: 32px; margin:0; font-weight: 700; }
+    p { line-height: 1.5; }
+    .card { border:1px solid #000; padding:16px; margin:24px 0; }
+    .message { border-left:3px solid #000; padding-left:12px; margin:12px 0; }
+    a { color:#000; }
+    footer { margin-top:40px; font-size: 12px; }
+  </style>
 </head>
 <body>
-    <h1>Welcome to the Standard Assholes Podcast</h1>
-    <p>Your source for all things podcast-related!</p>
+  <div class="wrap">
+    <header>
+      <img src="saholes.png" alt="Standard Assholes logo" />
+      <div>
+        <h1>The Standard Assholes Podcast</h1>
+        <div>TMVP Presents: a C Block Spinoff</div>
+      </div>
+    </header>
+
+    <p>
+      A plain, pedestrian showcase of improvisational humor, scripted bits, and entertainment experiments.
+      Delivered at baseline standards.
+    </p>
+
+    <div class="card">
+      <strong>Listen on Spotify</strong>
+      <div style="margin-top:12px;">
+        <iframe
+          style="border-radius:0;"
+          src="https://open.spotify.com/embed/show/02g9DiHXvQlvJGgL5vSuxh?utm_source=generator"
+          width="100%"
+          height="152"
+          frameborder="0"
+          allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture"
+          loading="lazy">
+        </iframe>
+      </div>
+      <p style="margin-top:12px;">
+        The Media Virus Podcast Network, in conjunction with The Infection Team proudly present:
+      </p>
+    </div>
+
+    <p>
+      <a href="https://www.themediavirus.com">Visit The Media Virus Podcast</a>
+    </p>
+
+    <!-- Add this container for the blurb module -->
+    <div id="blurbModule"></div>
+
+<script>
+(async function(){
+
+  const VALIDATION_STRING = "@!#$%&**)(dookie><=÷×?@";
+  const sheetCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTyttdz_e1tyl61T99zLT7fxxmxzCVRCCGjCyjxczHbIVohfCjANnCB-ZfTZbWYE-6Jk-L83Rg2xS9-/pub?output=csv";
+
+  const container = document.getElementById("blurbModule");
+  container.textContent = "Reviewing submissions…";
+
+  try {
+    const res = await fetch(sheetCSV, { cache: "no-store" });
+    if (!res.ok) throw new Error("Fetch failed");
+
+    const text = await res.text();
+
+    const rows = text.trim().split("\n")
+      .map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
+
+    const header = rows.shift();
+
+    const idx = {
+      timestamp: header.indexOf("Timestamp"),
+      blurb: header.indexOf("Headline:Blurb"),
+      validation: header.indexOf("Validation Code"),
+      goes: header.indexOf("Goes Live"),
+      dies: header.indexOf("Dies"),
+      posted: header.indexOf("Posted by:")
+    };
+
+    const now = new Date();
+
+    const validEntries = rows
+      .map(cols => ({
+        timestamp: new Date((cols[idx.timestamp] || "").replace(/"/g, "")),
+        blurb: (cols[idx.blurb] || "").replace(/"/g, ""),
+        validation: (cols[idx.validation] || "").replace(/"/g, "").trim(),
+        goes: new Date((cols[idx.goes] || "").replace(/"/g, "")),
+        dies: new Date((cols[idx.dies] || "").replace(/"/g, "")),
+        posted: (cols[idx.posted] || "").replace(/"/g, "")
+      }))
+      .filter(entry =>
+        entry.validation === VALIDATION_STRING &&
+        now >= entry.goes &&
+        now <= entry.dies
+      )
+      .sort((a, b) => {
+        if (b.timestamp - a.timestamp !== 0) {
+          return b.timestamp - a.timestamp;
+        }
+        return a.dies - b.dies;
+      });
+
+    container.innerHTML = "";
+
+    validEntries.forEach(entry => {
+      const div = document.createElement("div");
+      div.className = "message";
+      div.innerHTML = `
+        <div>${entry.blurb}</div>
+        <div style="margin-top:8px;font-size:12px;">
+          Posted by ${entry.posted} on ${entry.timestamp.toLocaleString()}
+        </div>
+      `;
+      container.appendChild(div);
+    });
+
+    if (validEntries.length === 0) {
+      container.textContent = "No currently validated blurbs meet publication criteria.";
+    }
+
+  } catch (err) {
+    container.textContent = "Blurb validation temporarily unavailable.";
+  }
+
+})();
+</script>
+    
+    <footer>
+      © Standard Assholes Podcast &amp; The Media Virus Podcast Network 2026. This site complies with no known standards.
+    </footer>
+  </div>
 </body>
 </html>
