@@ -60,7 +60,6 @@
 
 <script>
 (async function(){
-
   const VALIDATION_STRING = "@!#$%&**)(dookie><=÷×?@";
   const sheetCSV = "https://docs.google.com/spreadsheets/d/e/2PACX-1vTyttdz_e1tyl61T99zLT7fxxmxzCVRCCGjCyjxczHbIVohfCjANnCB-ZfTZbWYE-6Jk-L83Rg2xS9-/pub?output=csv";
 
@@ -72,20 +71,26 @@
     if (!res.ok) throw new Error("Fetch failed");
 
     const text = await res.text();
-
     const rows = text.trim().split("\n")
       .map(r => r.split(/,(?=(?:[^"]*"[^"]*")*[^"]*$)/));
 
     const header = rows.shift();
+    
+    // DEBUG: Log the actual column headers
+    console.log("Column headers:", header);
 
     const idx = {
       timestamp: header.indexOf("Timestamp"),
-      blurb: header.indexOf("Headline:Blurb"),
+      blurb: header.indexOf("Headline:" "Blurb"),
       validation: header.indexOf("Validation Code"),
       goes: header.indexOf("Goes Live"),
       dies: header.indexOf("Dies"),
       posted: header.indexOf("Posted by:")
     };
+    
+    // DEBUG: Log the index positions
+    console.log("Index positions:", idx);
+    console.log("First data row:", rows[0]);
 
     const now = new Date();
 
@@ -110,6 +115,8 @@
         return a.dies - b.dies;
       });
 
+    console.log("Valid entries:", validEntries);
+
     container.innerHTML = "";
 
     validEntries.forEach(entry => {
@@ -129,6 +136,7 @@
     }
 
   } catch (err) {
+    console.error("Error:", err);
     container.textContent = "Blurb validation temporarily unavailable.";
   }
 
