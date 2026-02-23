@@ -98,6 +98,7 @@
     const validEntries = rows
       .map(cols => ({
         timestamp: new Date((cols[idx.timestamp] || "").replace(/"/g, "")),
+        headline: (cols[idx.headline] || "").replace(/"/g, ""),
         blurb: (cols[idx.blurb] || "").replace(/"/g, ""),
         validation: (cols[idx.validation] || "").replace(/"/g, "").trim(),
         goes: new Date((cols[idx.goes] || "").replace(/"/g, "")),
